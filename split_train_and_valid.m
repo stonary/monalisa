@@ -7,5 +7,5 @@ function [train_inputs, train_targets, valid_inputs, valid_targets] = ...
     train_inputs = inputs(:, 1:train_size);
     valid_inputs = inputs(:, (train_size+1):total_size);
 
-    train_targets = targets(1:train_size);
-    valid_targets = targets((train_size+1):total_size);
+    train_targets = targets(1:train_size, :);
+    valid_targets = targets((train_size+1):total_size, :);
