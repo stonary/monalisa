@@ -1,31 +1,26 @@
-load digits;
 
-train = [train2, train3]; % 256 x 600 data matrix
-validSet = [valid2, valid3];
+%Input:
+%   data - a mxn matrix, where n is the number of cases,
+%            m is the dimension of each case
+%   new_dimensions - the number of dimensions of the new data.
+%                        must be <= m
+%
+%Output:
+%   projected_data - a cxn matrix, where c = new_dimensions
+%
+function [projected_data] = pca(data, new_dimensions)
 
-% generate matrix containing correct outputs
-validLabels = [zeros(100, 1); ones(100, 1)];
+    C = zeros(size(data, 1), size(data, 1));
+    N = size(data, 2);
 
-% values of m to try
-mVec = [2, 5, 10, 20];
-
-% counter for the for loop
-count = 1;
-
-% vector to store the error rate for each value of m
-fracError = zeros(4, 1);
-
-for m = mVec
-
-    C = zeros(256, 256);
-    N = size(train, 2);
+    double_data = double(data);
     
     % find the mean vector
-    theMean = mean([train2, train3], 2);
+    theMean = mean(data, 2);
 
     % find the matrix C that we will find eigenvectors from
     for i = 1:N
-       sub = train(:, i) - theMean;
+       sub = double_data(:, i) - theMean;
        C = C + ((1/N) * sub) * transpose(sub);
     end
 
@@ -39,30 +34,10 @@ for m = mVec
     eigVec = eigVec(:, indices);
 
     % 256 x m matrix
-    U = eigVec(:, 1:m);
+    U = eigVec(:, 1:new_dimensions);
 
-    % find projected data which is m x 600
-    projTrain = transpose(U) * train;
+    % find projected data
+    projected_data = transpose(U) * double_data;
 
-    % find projected validation set
-    projValid = transpose(U) * validSet;
-
-    % Prepare to feed to run_knn function from A1 which runs k-NN
-    knnPredict = run_knn(1, transpose(projTrain), [zeros(300, 1); ones(300, 1)], transpose(projValid));
-
-    % find how many correct we have
-    numCorrect = sum(knnPredict == validLabels);
-
-    % find the error rate
-    fracError(count) = (200 - numCorrect) / 200;
-    
-    count = count + 1;
 end
 
-clf
-  hold on, ...
-  plot(mVec, fracError, 'r'),...
-  %legend('Train', 'Valid', 'Test'),...
-  title('Classification Error vs. Number of Principal Components'), ...
-  xlabel('Number of Principal Components/Eigenvectors'), ...
-  ylabel('Classification Error');
