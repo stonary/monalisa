@@ -23,8 +23,8 @@ end
 start_indices(8) = size(sorted_train_labels, 1) + 1;
 
 for i = 1:7
-    exps(i).inputs = sorted_train(:, start_indices(i):start_indices(i + 1) - 1);
-    exps(i).labels = sorted_train_labels( start_indices(i):start_indices(i + 1) - 1);
+    exps(i).inputs = sorted_train(:, start_indices(i):(start_indices(i + 1) - 1));
+    exps(i).labels = sorted_train_labels( start_indices(i):(start_indices(i + 1) - 1));
     exps(i).other_inputs = [sorted_train(:, 1: start_indices(i) - 1) ...
         sorted_train(:, start_indices(i+1): num_of_cases)];
     exps(i).other_labels = [sorted_train_labels(1: start_indices(i) - 1, :); ...
@@ -57,15 +57,15 @@ for i = 1:7
         split_train_and_valid(train, labels, ratio);
     
     %% train for particular expression
-    num_epochs = 4000;
+    num_epochs = 8000;
     min_classErr = 1;   maxepoch = 0;    maxeps = 0;
     max_hidden = 0; max_mom = 0;
     %hiddens, eps, momentum, err/epoch
     scoring_materix = zeros(12 * 21 * 6, 5);
     k = 1;
 %     num_hiddens = 50;     eps = 0.001;     momentum = 0;
-    for num_hiddens = [10 50 100 200]%[10 20:20:200 500]
-        for eps = [0.001 0.005 0.01 0.05 0.1]%[0.001 0.005:0.005:0.1]
+    for num_hiddens = 100 %[10 50 100 200]%[10 20:20:200 500]
+        for eps = 0.0005 %[0.001 0.005 0.01 0.05 0.1]%[0.001 0.005:0.005:0.1]
             for momentum = 0 %[0 0.001 0.01 0.1]%[0 0.01 0.05:0.05:0.2]
                 fprintf('====== training: hiddens %d, eps %f, mom %f\n', num_hiddens, eps, momentum);
                 
